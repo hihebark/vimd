@@ -9,8 +9,6 @@ import (
 	"github.com/hihebark/pickle/core"
 )
 
-const GITHUBAPI string = "https://api.github.com/markdown/raw"
-
 var (
 	f *string
 )
@@ -20,7 +18,7 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("I'am pickle!\n")
+	fmt.Printf("  [I'am pickle!]\n")
 	flag.Parse()
 	if *f == "" {
 		flag.PrintDefaults()
@@ -33,14 +31,13 @@ func main() {
 	file, err := os.OpenFile(*f, os.O_RDONLY, 0555)
 	defer file.Close()
 	if err != nil {
-		fmt.Printf("! Error on reading file check permission.\n%v\n", err)
+		fmt.Printf("! Error on reading file check permission.\n\t\t%v\n", err)
 		os.Exit(1)
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Printf("! Error reading file. %v\n", err)
+		fmt.Printf("! Error reading file.\n\t\t%v\n", err)
 	}
-	htmldata := core.DoRequest(GITHUBAPI, string(data))
-	md := core.Markdown{file.Name(), htmldata}
-	core.StartServer(md)
+	htmldata := core.MarkdowntoHTML(string(data))
+	core.StartServer(core.Markdown{file.Name(), htmldata})
 }

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
+<!--
+HTML from grip project
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>README.md</title>
+  <title>{{.Name}}</title>
   <link rel="icon" href="favicon.ico" />
-  <link rel="stylesheet" href="pickle.css" />
+  <link rel="stylesheet" href="css/pickle.css" />
   <link rel="stylesheet" href="css/syntax.css" />
   <link rel="stylesheet" href="css/github.css" />
   <style>
@@ -30,12 +33,10 @@
         <div class="container new-discussion-timeline experiment-repo-nav">
           <div class="repository-content">
             <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
-              
-                <h3>
-                  <span class="octicon octicon-book"></span>
+              <h3>
+                <span class="octicon octicon-book"></span>
                   {{ .Name }}
-                </h3>
-              
+              </h3>
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 {{ .Data }}
               </article>
@@ -45,4 +46,5 @@
       </div>
   </div>
   <div>&nbsp;</div>
+  <p align="center"><i>Made with </i>■ <i>by <b><a href="https://github.com/hihebark">hihebark</a></b></i></p>
 </body>
