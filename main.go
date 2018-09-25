@@ -3,10 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/hihebark/pickle/core"
 )
+
+const GITHUBAPI string = "https://api.github.com/markdown/raw"
 
 var (
 	f *string
@@ -33,6 +36,11 @@ func main() {
 		fmt.Printf("! Error on reading file check permission.\n%v\n", err)
 		os.Exit(1)
 	}
-	//curl https://api.github.com/markdown/raw -X "POST" -H "Content-Type: text/plain" -d "Hello world github/linguist#1 **cool**, and #1!"
-	core.DoRequest("https://api.github.com/markdown/raw", "## Hello World")
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Printf("! Error reading file. %v\n", err)
+	}
+	htmldata := core.DoRequest(GITHUBAPI, string(data))
+	md := core.Markdown{file.Name(), htmldata}
+	core.StartServer(md)
 }
