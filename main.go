@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/hihebark/pickle/core"
 )
 
 var (
@@ -31,4 +33,6 @@ func main() {
 		fmt.Printf("! Error on reading file check permission.\n%v\n", err)
 		os.Exit(1)
 	}
+	//curl https://api.github.com/markdown/raw -X "POST" -H "Content-Type: text/plain" -d "Hello world github/linguist#1 **cool**, and #1!"
+	core.DoRequest("https://api.github.com/markdown/raw", "## Hello World")
 }
