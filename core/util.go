@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"strings"
+	//"strings"
 	"sync"
 )
 
@@ -59,21 +59,33 @@ func (mutex *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		defer mutex.mutex.RUnlock()
 		showResults(w, r, mutex.md)
 		return
-	case strings.HasSuffix(r.URL.Path[1:], ".css"):
-		css := []string{
-			"pickle.css",
-			"syntax.css",
-			"github.css",
-		}
-		for _, v := range css {
-			mutex.mutex.RLock()
-			defer mutex.mutex.RUnlock()
-			r.Header.Set("Content-Type", "text/css")
-			http.ServeFile(w, r, "template/assets/css/"+v)
-		}
-		return
+	case r.URL.Path == "/assets/css/github.css":
+		mutex.mutex.RLock()
+		defer mutex.mutex.RUnlock()
+		r.Header.Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "template/assets/css/github.css")
+	case r.URL.Path == "/assets/css/syntax.css":
+		mutex.mutex.RLock()
+		defer mutex.mutex.RUnlock()
+		r.Header.Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "template/assets/css/syntax.css")
+	/*
+		case strings.HasSuffix(r.URL.Path, ".css"):
+			css := []string{
+				"pickle.css",
+				"syntax.css",
+				"github.css",
+			}
+			for _, v := range css {
+				mutex.mutex.RLock()
+				defer mutex.mutex.RUnlock()
+				r.Header.Set("Content-Type", "text/css")
+				http.ServeFile(w, r, "template/assets/css/"+v)
+			}
+			return
+	*/
 	default:
-		http.Redirect(w, r, "/", http.StatusFound)
+		//http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 }
