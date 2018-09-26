@@ -2,7 +2,7 @@
 
 # pickle
 
-Piclle is a tool to preview markdown syntax alike github, It use github api to generate an html file.
+Pickle is a tool to preview markdown syntax alike github, It use github api to generate an html file.
 
 ## Usage
 
