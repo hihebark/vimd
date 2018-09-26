@@ -3,7 +3,6 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"html"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -19,7 +18,7 @@ type ServeMux struct {
 //Markdown
 type Markdown struct {
 	Name string
-	Data string
+	Data template.HTML
 }
 
 const GITHUBAPI string = "https://api.github.com/markdown/raw"
@@ -44,6 +43,8 @@ func MarkdowntoHTML(data string) string {
 func StartServer(md Markdown) {
 	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
 	mux := &ServeMux{md: md}
+	fs := http.FileServer(http.Dir("template/assets/css/"))
+	http.Handle("css/", fs)
 	err := http.ListenAndServe(":7069", mux)
 	if err != nil {
 		fmt.Printf("! Error on starting server\n\t\t%v\n", err)
@@ -58,16 +59,17 @@ func (mutex *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		defer mutex.mutex.RUnlock()
 		showResults(w, r, mutex.md)
 		return
-	case strings.Contains(r.URL.Path, "css/"):
-		assets := []string{
-			"css/pickle.css",
-			"css/syntax.css",
-			"css/github.css",
+	case strings.HasSuffix(r.URL.Path[1:], ".css"):
+		css := []string{
+			"pickle.css",
+			"syntax.css",
+			"github.css",
 		}
-		for _, v := range assets {
+		for _, v := range css {
 			mutex.mutex.RLock()
 			defer mutex.mutex.RUnlock()
-			http.ServeFile(w, r, "template/assets/"+v)
+			r.Header.Set("Content-Type", "text/css")
+			http.ServeFile(w, r, "template/assets/css/"+v)
 		}
 		return
 	default:
@@ -83,6 +85,5 @@ func showResults(w http.ResponseWriter, r *http.Request, data Markdown) {
 	if err != nil {
 		fmt.Printf("! Error html parser\n\t\t%v\n", err)
 	}
-	data.Data = html.UnescapeString(data.Data)
 	htmlTemplate.Execute(w, data)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
 
@@ -39,5 +40,5 @@ func main() {
 		fmt.Printf("! Error reading file.\n\t\t%v\n", err)
 	}
 	htmldata := core.MarkdowntoHTML(string(data))
-	core.StartServer(core.Markdown{file.Name(), htmldata})
+	core.StartServer(core.Markdown{file.Name(), template.HTML(htmldata)})
 }

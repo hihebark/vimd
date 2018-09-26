@@ -1,15 +1,12 @@
+<!-- HTML from grip project -->
 <!DOCTYPE html>
-<!--
-HTML from grip project
--->
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>{{.Name}}</title>
-  <link rel="icon" href="favicon.ico" />
-  <link rel="stylesheet" href="css/pickle.css" />
-  <link rel="stylesheet" href="css/syntax.css" />
-  <link rel="stylesheet" href="css/github.css" />
+  <link rel="stylesheet" type="text/css" href="assets/css/pickle.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/syntax.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/github.css">
   <style>
     /* Page tweaks */
     .preview-page {
@@ -33,18 +30,15 @@ HTML from grip project
         <div class="container new-discussion-timeline experiment-repo-nav">
           <div class="repository-content">
             <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
-              <h3>
-                <span class="octicon octicon-book"></span>
-                  {{ .Name }}
-              </h3>
+              <h3><span class="octicon octicon-book"></span>{{.Name}}</h3>
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
-                {{ .Data }}
+                {{.Data}}
               </article>
             </div>
           </div>
         </div>
       </div>
   </div>
-  <div>&nbsp;</div>
   <p align="center"><i>Made with </i>■ <i>by <b><a href="https://github.com/hihebark">hihebark</a></b></i></p>
 </body>
+</html>
