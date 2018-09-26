@@ -42,9 +42,8 @@ func MarkdowntoHTML(data string) string {
 //StartServer open the port 7069.
 func StartServer(md Markdown) {
 	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
+	fmt.Println("- To exit hit Ctrl+c ...")
 	mux := &ServeMux{md: md}
-	fs := http.FileServer(http.Dir("template/assets/css/"))
-	http.Handle("css/", fs)
 	err := http.ListenAndServe(":7069", mux)
 	if err != nil {
 		fmt.Printf("! Error on starting server\n\t\t%v\n", err)
@@ -85,7 +84,7 @@ func (mutex *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 	*/
 	default:
-		//http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 }

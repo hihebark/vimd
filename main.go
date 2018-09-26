@@ -19,7 +19,7 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("  [I'am pickle!]\n")
+	fmt.Printf("\n  [I'am pickle!]\n\n")
 	flag.Parse()
 	if *f == "" {
 		flag.PrintDefaults()
