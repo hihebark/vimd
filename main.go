@@ -31,6 +31,4 @@ func main() {
 		list = append(list, *f)
 	}
 	core.StartServer(list)
-	//htmldata := core.MarkdowntoHTML(string(data))
-	//core.StartServer(core.Markdown{file.Name(), template.HTML(htmldata)})
 }
