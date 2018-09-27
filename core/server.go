@@ -47,11 +47,6 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		defer x.mutex.RUnlock()
 		r.Header.Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "template/"+r.URL.Path)
-	/*case r.URL.Path == "/assets/css/syntax.css":
-	x.mutex.RLock()
-	defer x.mutex.RUnlock()
-	r.Header.Set("Content-Type", "text/css")
-	http.ServeFile(w, r, "template/assets/css/syntax.css")*/
 	case r.URL.Query().Get("f") != "":
 		x.mutex.RLock()
 		defer x.mutex.RUnlock()
