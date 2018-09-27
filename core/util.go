@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+//GITHUBAPI link to api to access github/markdown
 const GITHUBAPI string = "https://api.github.com/markdown/raw"
 
 //MarkdowntoHTML convert given markdown data to html.

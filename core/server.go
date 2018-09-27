@@ -9,13 +9,12 @@ import (
 	"sync"
 )
 
-//ServeMux
+// ServeMux just a mutex
 type ServeMux struct {
 	mutex sync.RWMutex
 	filew fileWrap
 }
 
-//fileWrap
 type fileWrap struct {
 	List []string
 	Name string
