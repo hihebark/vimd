@@ -36,7 +36,7 @@ func StartServer(list []string) {
 //ServeHTTP hundle results route
 func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
-	case r.URL.Path == "/":
+	case r.URL.Path == "/index":
 		x.mutex.RLock()
 		defer x.mutex.RUnlock()
 		indexpage(w, r, x.filew, x.filew.List[0])
@@ -54,7 +54,7 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		indexpage(w, r, x.filew, x.filew.List[k])
 		return
 	default:
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/index", http.StatusFound)
 		return
 	}
 }

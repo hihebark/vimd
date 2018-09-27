@@ -18,13 +18,17 @@ func MarkdowntoHTML(data string) string {
 		fmt.Printf("! Error on request\n\t\t%v\n", err)
 	}
 	req.Header.Set("Content-Type", "text/plain")
-	if os.Getenv("PICKLETOKEN") != "" {
+	if len(os.Getenv("PICKLETOKEN")) != 0 {
+		fmt.Printf("- Detecting environment variable PICKLETOKEN")
 		req.Header.Set("Authorizations", fmt.Sprintf("token %s", os.Getenv("PICKLETOKEN")))
 	}
 	client := &http.Client{}
 	fmt.Printf("- Getting html from github ...\n")
 	resp, err := client.Do(req)
-	fmt.Printf("%v\n", resp.StatusCode)
+	if resp.StatusCode != 200 {
+		fmt.Printf("! Header:\n%v", resp.Header)
+		return "Error with rate limit."
+	}
 	if err != nil {
 		fmt.Printf("! Error on response\n\t\t%v\n", err)
 	}

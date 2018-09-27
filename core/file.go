@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-//Mdfilelist return a list of markdown file .md or .markdown
+//Mdfileslist return a list of markdown file .md or .markdown
 func Mdfileslist() []string {
 	var listfiles []string
 	files, err := filepath.Glob("*.*")
