@@ -18,11 +18,9 @@ func MarkdowntoHTML(data, token string) string {
 	}
 	req.Header.Set("Content-Type", "text/plain")
 	if len(token) != 0 {
-		fmt.Printf("- Detecting token\n")
 		req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 	}
 	client := &http.Client{}
-	fmt.Printf("- Getting html from github ...\n")
 	resp, err := client.Do(req)
 	if resp.StatusCode != 200 {
 		fmt.Printf("! Header:\n%v", resp.Header)

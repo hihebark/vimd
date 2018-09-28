@@ -18,16 +18,17 @@ Pickle is a tool to preview markdown syntax alike github, It use github api to g
 
 ## Usage
 
+I set an enviroment variable `PICKLETOKEN="abcd1234********************************"`
 for a specifique file:
 
-`$ ./pickle -f test.md`
+`$ ./pickle -file test.md -token $PICKLETOKEN`
 
 for working directory:
 
-`$ ./pickle`
+`$ ./pickle -token $PICKLETOKEN`
 
 And then open your browser on `localhost:7069` OR `[::1]:7069`
 
-### Extra
+## Screenshot
 
-U can set environment variable on you're terminal `PICKLETOKEN="abcd1234********************************"`
+![screenshot](picklescreenshot.png "screenshot")
