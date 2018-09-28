@@ -9,18 +9,20 @@ import (
 )
 
 var (
-	f *string
+	file  *string
+	token *string
 )
 
 func init() {
-	f = flag.String("f", "", "Markdown file")
+	file = flag.String("file", "", "Markdown file")
+	token = flag.String("token", "", "Github api token.")
 }
 
 func main() {
 	fmt.Printf("\n  [I'am pickle]\n\n")
 	flag.Parse()
 	var list []string
-	if *f == "" {
+	if *file == "" {
 		list = core.Mdfileslist()
 		if len(list) == 0 {
 			fmt.Printf("! Error no markdown file in this directory.")
@@ -28,7 +30,7 @@ func main() {
 		}
 		fmt.Printf("Files %v\n", list)
 	} else {
-		list = append(list, *f)
+		list = append(list, *file)
 	}
-	core.StartServer(list)
+	core.StartServer(list, *token)
 }

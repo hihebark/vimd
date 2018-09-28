@@ -13,6 +13,7 @@ import (
 type ServeMux struct {
 	mutex sync.RWMutex
 	filew fileWrap
+	token string
 }
 
 type fileWrap struct {
@@ -22,11 +23,11 @@ type fileWrap struct {
 }
 
 //StartServer open the port 7069.
-func StartServer(list []string) {
+func StartServer(list []string, token string) {
 	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
 	fmt.Println("+ To exit hit Ctrl+c ...")
 	filew := fileWrap{List: list}
-	x := &ServeMux{filew: filew}
+	x := &ServeMux{filew: filew, token: token}
 	err := http.ListenAndServe(":7069", x)
 	if err != nil {
 		fmt.Printf("! Error on starting server\n\t\t%v\n", err)
@@ -39,7 +40,7 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case r.URL.Path == "/index":
 		x.mutex.RLock()
 		defer x.mutex.RUnlock()
-		indexpage(w, r, x.filew, x.filew.List[0])
+		indexpage(w, r, x.filew, x.filew.List[0], x.token)
 		return
 	case strings.Contains(r.URL.Path, ".css"):
 		x.mutex.RLock()
@@ -51,20 +52,20 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		defer x.mutex.RUnlock()
 		k, _ := strconv.Atoi(r.URL.Query().Get("f"))
 		fmt.Printf("* Processing with %s file\n", x.filew.List[k])
-		indexpage(w, r, x.filew, x.filew.List[k])
+		indexpage(w, r, x.filew, x.filew.List[k], x.token)
 		return
 	default:
 		http.Redirect(w, r, "/index", http.StatusFound)
 		return
 	}
 }
-func indexpage(w http.ResponseWriter, r *http.Request, filew fileWrap, name string) {
+func indexpage(w http.ResponseWriter, r *http.Request, filew fileWrap, name, token string) {
 	htmlTemplate := template.New("index.html")
 	htmlTemplate, err := htmlTemplate.ParseFiles("template/index.html")
 	if err != nil {
 		fmt.Printf("! Error html parser\n\t\t%v\n", err)
 	}
 	filew.Name = name
-	filew.Data = template.HTML(MarkdowntoHTML(contentFile(filew.Name)))
+	filew.Data = template.HTML(MarkdowntoHTML(contentFile(filew.Name), token))
 	htmlTemplate.Execute(w, filew)
 }
