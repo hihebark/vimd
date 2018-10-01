@@ -30,7 +30,7 @@ const TEMPLATE = `
     <div class="file-wrap container">
       <table class="files js-navigation-container js-active-navigation-container" data-pjax>
         <tbody>
-          {{ range $k, $v := .List }}
+          {{ range $k, $v := .Wraps }}
           <tr class="js-navigation-item">
             <td class="icon">
               <svg class="octicon octicon-file" viewBox="0 0 12 16" version="1.1" width="12" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M6 5H2V4h4v1zM2 8h7V7H2v1zm0 2h7V9H2v1zm0 2h7v-1H2v1zm10-7.5V14c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V2c0-.55.45-1 1-1h7.5L12 4.5zM11 5L8 2H1v12h10V5z"/></svg>
@@ -38,11 +38,11 @@ const TEMPLATE = `
             </td>
             <td class="content">
               <span class="css-truncate css-truncate-target">
-                <a class="js-navigation-open" title="util.go" id="" href="/?f={{ $k }}">{{ $v }}</a>
+                <a class="js-navigation-open" title="util.go" id="" href="/?f={{ $k }}">{{ $v.Name }}</a>
               </span>
             </td>
-            <td class="message">####</td>
-            <td class="age"></td>
+            <td class="message">{{ $v.Commit }}</td>
+            <td class="age">{{$v.Date}}</td>
           </tr>
           {{ end }}
         </tbody>
@@ -59,7 +59,7 @@ const TEMPLATE = `
 				{{.Name}}
 			  </h3>
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
-                {{.Data}}
+                {{.Content}}
               </article>
             </div>
           </div>
@@ -67,8 +67,5 @@ const TEMPLATE = `
       </div>
   </div>
   <p align="center"><b>Pickle</b> - <i>Made by <b><a href="https://github.com/hihebark">hihebark</a></b></i></p>
-  <script>
-	 document.body.innerHTML = document.body.innerHTML.replace(/####/g, {{.Commit}});
-  </script>
 </body>
 </html>`
