@@ -29,6 +29,14 @@ for working directory:
 
 And then open your browser on `localhost:7069` OR `[::1]:7069`
 
+## Install
+
+you will need `> go 1.9`
+
+get the project `go get -u github.com/hihebark/pickle`
+
+and then install `go install` or `go build`
+
 ## Screenshot
 
 ![screenshot](picklescreenshot.png "screenshot")

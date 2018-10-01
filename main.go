@@ -28,7 +28,6 @@ func main() {
 			fmt.Printf("! Error no markdown file in this directory.")
 			os.Exit(0)
 		}
-		fmt.Printf("Files %v\n", list)
 	} else {
 		list = append(list, *file)
 	}

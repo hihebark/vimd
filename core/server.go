@@ -16,18 +16,21 @@ type ServeMux struct {
 	token string
 }
 
+// Wrap .
 type Wrap struct {
 	Commit string
 	Date   string
 	Name   string
 }
+
+// Wraps .
 type Wraps struct {
 	Wraps   []Wrap
 	Content template.HTML
 	Name    string
 }
 
-//StartServer open the port 7069.
+// StartServer open the port 7069.
 func StartServer(list []string, token string) {
 	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
 	fmt.Println("+ To exit hit Ctrl+c ...")
@@ -65,7 +68,7 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("! Processing with unknown page %d - redirecting to home\n", k)
 			http.Redirect(w, r, "/index", http.StatusFound)
 		}
-		fmt.Printf("* Processing with %s file\n", x.wraps.Wraps[k])
+		fmt.Printf("* Processing with %s file\n", x.wraps.Wraps[k].Name)
 		indexpage(w, r, x.wraps, k, x.token)
 		return
 	default:

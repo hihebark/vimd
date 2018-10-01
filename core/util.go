@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-//GITHUBAPI link to api to access github/markdown
+//GITHUBAPIURL link to api to access github/markdown
 const GITHUBAPIURL string = "https://api.github.com/markdown/raw"
 
 //MarkdowntoHTML convert given markdown data to html.
