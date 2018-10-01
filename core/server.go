@@ -51,6 +51,10 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		x.mutex.RLock()
 		defer x.mutex.RUnlock()
 		k, _ := strconv.Atoi(r.URL.Query().Get("f"))
+		if k > len(x.filew.List) {
+			fmt.Printf("! Processing with unknown page %d - redirecting to home\n", k)
+			http.Redirect(w, r, "/index", http.StatusFound)
+		}
 		fmt.Printf("* Processing with %s file\n", x.filew.List[k])
 		indexpage(w, r, x.filew, x.filew.List[k], x.token)
 		return
@@ -60,8 +64,8 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func indexpage(w http.ResponseWriter, r *http.Request, filew fileWrap, name, token string) {
-	htmlTemplate := template.New("index.html")
-	htmlTemplate, err := htmlTemplate.ParseFiles("template/index.html")
+	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
+	//htmlTemplate, err := htmlTemplate.ParseFiles("template/index.html")
 	if err != nil {
 		fmt.Printf("! Error html parser\n\t\t%v\n", err)
 	}

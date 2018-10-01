@@ -1,11 +1,13 @@
-<!-- HTML from grip project -->
+package core
+
+const TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{.Name}}</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/syntax.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/github.css">
+  <link crossorigin="anonymous" media="all" integrity="sha512-mjQPRAh2Y9A0sPdZzipNfPO7PT4g06mk0uZs15DbL/vsNCRGx1uRzWVzls9MJCoy2yRNjaMmEVFKJDpCui00mA==" rel="stylesheet" href="https://assets-cdn.github.com/assets/frameworks-df973073d880f28fbbae0263fb1ef62b.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-k4rXi2xAgpvXlB7r/tZ1ski3o3AWXfn7Z6hx6C/g9CcFeM5miuGB8zJFRgQW5wDKRaNQfv42R9F707X/2WqAQg==" rel="stylesheet" href="https://assets-cdn.github.com/assets/github-2b520d809bcf76c745c815d9523f0a00.css" />
   <style>
     /* Page tweaks */
     .preview-page {
@@ -50,7 +52,10 @@
         <div class="container new-discussion-timeline experiment-repo-nav">
           <div class="repository-content">
             <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
-              <h3><span class="octicon octicon-book"></span>{{.Name}}</h3>
+              <h3>
+				<svg class="octicon octicon-book" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M3 5h4v1H3V5zm0 3h4V7H3v1zm0 2h4V9H3v1zm11-5h-4v1h4V5zm0 2h-4v1h4V7zm0 2h-4v1h4V9zm2-6v9c0 .55-.45 1-1 1H9.5l-1 1-1-1H2c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h5.5l1 1 1-1H15c.55 0 1 .45 1 1zm-8 .5L7.5 3H2v9h6V3.5zm7-.5H9.5l-.5.5V12h6V3z"/></svg>
+				<span class="octicon octicon-book"></span>{{.Name}}
+			  </h3>
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 {{.Data}}
               </article>
@@ -61,4 +66,4 @@
   </div>
   <p align="center"><b>Pickle</b> - <i>Made by <b><a href="https://github.com/hihebark">hihebark</a></b></i></p>
 </body>
-</html>
+</html>`
