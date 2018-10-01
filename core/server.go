@@ -17,9 +17,11 @@ type ServeMux struct {
 }
 
 type fileWrap struct {
-	List []string
-	Name string
-	Data template.HTML
+	List   []string
+	Name   string
+	Data   template.HTML
+	Commit string
+	Date   string
 }
 
 //StartServer open the port 7069.
@@ -65,11 +67,12 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 func indexpage(w http.ResponseWriter, r *http.Request, filew fileWrap, name, token string) {
 	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
-	//htmlTemplate, err := htmlTemplate.ParseFiles("template/index.html")
 	if err != nil {
 		fmt.Printf("! Error html parser\n\t\t%v\n", err)
 	}
 	filew.Name = name
 	filew.Data = template.HTML(MarkdowntoHTML(contentFile(filew.Name), token))
+	filew.Commit = execute("git", []string{"log", "--format='%s'", "-n 1", name})
+	fmt.Printf("%s\n", filew.Commit)
 	htmlTemplate.Execute(w, filew)
 }

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 //Mdfileslist return a list of markdown file .md or .markdown
@@ -38,4 +40,17 @@ func contentFile(f string) string {
 		fmt.Printf("! Error reading file.\n\t\t%v\n", err)
 	}
 	return string(content)
+}
+
+func execute(pathExec string, args []string) string {
+	path, err := exec.LookPath(pathExec)
+	if err != nil {
+		return ""
+	}
+	cmd, err := exec.Command(path, args...).CombinedOutput()
+	if err != nil {
+		fmt.Printf("! Error while executing %v\n", err)
+		return ""
+	}
+	return strings.Replace(string(cmd), "\n", "", -1)
 }

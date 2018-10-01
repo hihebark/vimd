@@ -1,5 +1,6 @@
 package core
 
+//TEMPLATE for the front-end.
 const TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +41,7 @@ const TEMPLATE = `
                 <a class="js-navigation-open" title="util.go" id="" href="/?f={{ $k }}">{{ $v }}</a>
               </span>
             </td>
-            <td class="message">...</td>
+            <td class="message">####</td>
             <td class="age"></td>
           </tr>
           {{ end }}
@@ -54,7 +55,8 @@ const TEMPLATE = `
             <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
               <h3>
 				<svg class="octicon octicon-book" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M3 5h4v1H3V5zm0 3h4V7H3v1zm0 2h4V9H3v1zm11-5h-4v1h4V5zm0 2h-4v1h4V7zm0 2h-4v1h4V9zm2-6v9c0 .55-.45 1-1 1H9.5l-1 1-1-1H2c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h5.5l1 1 1-1H15c.55 0 1 .45 1 1zm-8 .5L7.5 3H2v9h6V3.5zm7-.5H9.5l-.5.5V12h6V3z"/></svg>
-				<span class="octicon octicon-book"></span>{{.Name}}
+				<span class="octicon octicon-book"></span>
+				{{.Name}}
 			  </h3>
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 {{.Data}}
@@ -65,5 +67,8 @@ const TEMPLATE = `
       </div>
   </div>
   <p align="center"><b>Pickle</b> - <i>Made by <b><a href="https://github.com/hihebark">hihebark</a></b></i></p>
+  <script>
+	 document.body.innerHTML = document.body.innerHTML.replace(/####/g, {{.Commit}});
+  </script>
 </body>
 </html>`
