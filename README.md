@@ -8,6 +8,9 @@
   <a href="https://github.com/hihebark/pickle/blob/master/LICENSE">
     <img src="https://img.shields.io/aur/license/yaourt.svg" alt="license">
   </a>
+  <a href="https://travis-ci.org/hihebark/pickle">
+    <img src="https://travis-ci.org/hihebark/pickle.svg?branch=master">
+  </a>
 </p>
 
 <p align="center"><img src="iampickle.jpg"></p>

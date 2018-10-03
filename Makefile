@@ -1,11 +1,9 @@
 TARGET=pickle
 
-all: deps build
-
-deps: godep
-	@dep ensure
+all: clean build install clean
 
 build:
+	@echo "+ Building ..."
 	@go build -o $(TARGET) .
 
 clean:
@@ -13,7 +11,5 @@ clean:
 	@rm -rf build
 
 install:
-	@cp $(TARGET) /usr/local/bin/
-
-godep:
-	@go get -u github.com/golang/dep/...
+	@echo "+ Installing ..."
+	@cp $(TARGET) ${GOPATH}/bin/
