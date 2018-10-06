@@ -11,9 +11,10 @@ import (
 
 // ServeMux just a mutex
 type ServeMux struct {
-	mutex sync.RWMutex
-	wraps Wraps
-	token string
+	mutex  sync.RWMutex
+	wraps  Wraps
+	token  string
+	static string
 }
 
 // Wrap .
@@ -31,20 +32,21 @@ type Wraps struct {
 }
 
 // StartServer open the port 7069.
-func StartServer(list []string, token string) {
+func StartServer(list []string, token, static string) {
 	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
 	fmt.Println("+ To exit hit Ctrl+c ...")
 	var ws []Wrap
-	for _, v := range list {
-		commit := strings.Replace(execute("git", []string{"log", "--format='%s'", "-n 1", v}), "'", "", -1)
-		date := strings.Replace(execute("git", []string{"log", "--format='%cr'", "-n 1", v}), "'", "", -1)
-		ws = append(ws, Wrap{commit, date, v})
+	for _, name := range list {
+		commit := strings.Replace(execute("git", []string{"log", "--format='%s'", "-n 1", name}), "'", "", -1)
+		date := strings.Replace(execute("git", []string{"log", "--format='%cr'", "-n 1", name}), "'", "", -1)
+		ws = append(ws, Wrap{commit, date, name})
 	}
 	x := &ServeMux{
 		wraps: Wraps{
 			Wraps: ws,
 		},
-		token: token,
+		token:  token,
+		static: static,
 	}
 	err := http.ListenAndServe(":7069", x)
 	if err != nil {

@@ -9,13 +9,15 @@ import (
 )
 
 var (
-	file  *string
-	token *string
+	file   *string
+	token  *string
+	static *string
 )
 
 func init() {
 	file = flag.String("file", "", "Markdown file")
 	token = flag.String("token", "", "Github api token.")
+	static = flag.String("static", ".", "Static file image, video, ...")
 }
 
 func main() {
@@ -31,5 +33,5 @@ func main() {
 	} else {
 		list = append(list, *file)
 	}
-	core.StartServer(list, *token)
+	core.StartServer(list, *token, *static)
 }
