@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -74,7 +75,13 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		indexpage(w, r, x.wraps, k, x.token)
 		return
 	default:
-		http.Redirect(w, r, "/index", http.StatusFound)
+		path := r.URL.Path[1:]
+		fmt.Printf("%v\n", path)
+		data, _ := ioutil.ReadFile(string(path))
+		r.Header.Add("Content-type", "image/*")
+		w.Write(data)
+		//http.FileServer(http.Dir(r.URL.Path))
+		//http.Redirect(w, r, "/index", http.StatusFound)
 		return
 	}
 }

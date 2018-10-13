@@ -22,12 +22,11 @@ func MarkdowntoHTML(data, token string) string {
 	}
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if resp.StatusCode != 200 {
-		fmt.Printf("! Header:\n%v", resp.Header)
-		return "Error with rate limit. issue #3 report to https://github.com/hihebark/pickle/issues"
-	}
 	if err != nil {
 		fmt.Printf("! Error on response\n\t\t%v\n", err)
+	}
+	if resp.StatusCode != 200 {
+		return "Error with rate limit. report to <a href='https://github.com/hihebark/pickle/issues'>issue #3</a> or just use -token argument!"
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	return string(body)
