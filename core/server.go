@@ -76,12 +76,14 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		path := r.URL.Path[1:]
-		fmt.Printf("%v\n", path)
 		data, _ := ioutil.ReadFile(string(path))
-		r.Header.Add("Content-type", "image/*")
-		w.Write(data)
-		//http.FileServer(http.Dir(r.URL.Path))
-		//http.Redirect(w, r, "/index", http.StatusFound)
+		switch {
+		case strings.HasSuffix(path, "jpg") || strings.HasSuffix(path, "jpeg") || strings.HasSuffix(path, "png"):
+			r.Header.Add("Content-type", "image/*")
+			w.Write(data)
+		default:
+			http.Redirect(w, r, "/index", http.StatusFound)
+		}
 		return
 	}
 }
