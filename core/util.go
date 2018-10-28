@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/hihebark/pickle/log"
 )
 
 //GITHUBAPIURL link to api to access github/markdown
@@ -14,7 +16,7 @@ const GITHUBAPIURL string = "https://api.github.com/markdown/raw"
 func MarkdowntoHTML(data, token string) string {
 	req, err := http.NewRequest("POST", GITHUBAPIURL, bytes.NewBufferString(data))
 	if err != nil {
-		fmt.Printf("! Error on request\n\t\t%v\n", err)
+		log.Err("Error on request\n\t%v", err)
 	}
 	req.Header.Set("Content-Type", "text/plain")
 	if len(token) != 0 {
@@ -23,9 +25,10 @@ func MarkdowntoHTML(data, token string) string {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("! Error on response\n\t\t%v\n", err)
+		log.Err("Error on response\n\t%v", err)
 	}
 	if resp.StatusCode != 200 {
+		log.Dbg("Rate limit\nThe Response: %v", resp.Header)
 		return "Error with rate limit. report to <a href='https://github.com/hihebark/pickle/issues'>issue #3</a> or just use -token argument!"
 	}
 	body, _ := ioutil.ReadAll(resp.Body)

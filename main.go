@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/hihebark/pickle/core"
+	"github.com/hihebark/pickle/log"
 )
 
 var (
@@ -23,17 +24,21 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("\n  [I'am pickle]\n\n")
+	fmt.Printf("\n[I'am pickle!]\n\n")
 	flag.Parse()
 	var list []string
 	if *file == "" {
 		list = core.Mdfileslist()
 		if len(list) == 0 {
-			fmt.Errorf("! Error no markdown file in this directory.")
+			log.Err("Error no markdown file in this directory.")
+			//fmt.Errorf("! Error no markdown file in this directory.")
 			os.Exit(0)
 		}
 	} else {
 		list = append(list, *file)
+	}
+	if *save {
+		//
 	}
 	core.StartServer(list, *token, *static)
 }

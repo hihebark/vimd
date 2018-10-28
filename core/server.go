@@ -1,13 +1,14 @@
 package core
 
 import (
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/hihebark/pickle/log"
 )
 
 // ServeMux just a mutex
@@ -34,8 +35,8 @@ type Wraps struct {
 
 // StartServer open the port 7069.
 func StartServer(list []string, token, static string) {
-	fmt.Println("+ Stating server on: localhost:7069 | [::1]:7069")
-	fmt.Println("+ To exit hit Ctrl+c ...")
+	log.Inf("Stating server on: localhost:7069 | [::1]:7069")
+	log.Inf("To exit hit Ctrl+c ...")
 	var ws []Wrap
 	for _, name := range list {
 		commit := strings.Replace(execute("git", []string{"log", "--format='%s'", "-n 1", name}), "'", "", -1)
@@ -51,7 +52,7 @@ func StartServer(list []string, token, static string) {
 	}
 	err := http.ListenAndServe(":7069", x)
 	if err != nil {
-		fmt.Printf("! Error on starting server\n\t\t%v\n", err)
+		log.Err("Error on starting server\n\t%v", err)
 	}
 }
 
@@ -68,10 +69,10 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		defer x.mutex.RUnlock()
 		k, _ := strconv.Atoi(r.URL.Query().Get("f"))
 		if k > len(x.wraps.Wraps) {
-			fmt.Printf("! Processing with unknown page %d - redirecting to home\n", k)
+			log.Inf("Processing with unknown page %d - redirecting to home", k)
 			http.Redirect(w, r, "/index", http.StatusFound)
 		}
-		fmt.Printf("* Processing with %s file\n", x.wraps.Wraps[k].Name)
+		log.Inf("Processing with %s file", x.wraps.Wraps[k].Name)
 		indexpage(w, r, x.wraps, k, x.token)
 		return
 	default:
@@ -90,7 +91,7 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func indexpage(w http.ResponseWriter, r *http.Request, wraps Wraps, key int, token string) {
 	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
 	if err != nil {
-		fmt.Printf("! Error html parser\n\t\t%v\n", err)
+		log.Err("Error html parser\n\t%v", err)
 	}
 	wraps.Name = wraps.Wraps[key].Name
 	wraps.Content = template.HTML(MarkdowntoHTML(contentFile(wraps.Name), token))
