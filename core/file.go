@@ -33,12 +33,12 @@ func contentFile(f string) string {
 	file, err := os.OpenFile(f, os.O_RDONLY, 0555)
 	defer file.Close()
 	if err != nil {
-		log.Err("Error on reading file check permission.\n\t%v", err)
+		log.Err("Error on reading file check permission. %v", err)
 		os.Exit(1)
 	}
 	content, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Err("Error reading file.\n\t%v", err)
+		log.Err("Error reading file. %v", err)
 	}
 	return string(content)
 }

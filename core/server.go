@@ -52,7 +52,7 @@ func StartServer(list []string, token, static string) {
 	}
 	err := http.ListenAndServe(":7069", x)
 	if err != nil {
-		log.Err("Error on starting server\n\t%v", err)
+		log.Err("Error on starting server %v", err)
 	}
 }
 
@@ -91,7 +91,7 @@ func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func indexpage(w http.ResponseWriter, r *http.Request, wraps Wraps, key int, token string) {
 	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
 	if err != nil {
-		log.Err("Error html parser\n\t%v", err)
+		log.Err("Error html parser %v", err)
 	}
 	wraps.Name = wraps.Wraps[key].Name
 	wraps.Content = template.HTML(MarkdowntoHTML(contentFile(wraps.Name), token))
