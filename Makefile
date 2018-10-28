@@ -1,6 +1,6 @@
 TARGET=pickle
 
-all: clean build install clean
+all: clean build install
 
 build:
 	@echo "+ Building ..."

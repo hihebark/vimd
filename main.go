@@ -12,12 +12,14 @@ var (
 	file   *string
 	token  *string
 	static *string
+	save   *bool
 )
 
 func init() {
 	file = flag.String("file", "", "Markdown file")
 	token = flag.String("token", "", "Github api token.")
 	static = flag.String("static", ".", "Static file image, video, ...")
+	save = flag.Bool("save", false, "Save as HTML file.")
 }
 
 func main() {
@@ -27,7 +29,7 @@ func main() {
 	if *file == "" {
 		list = core.Mdfileslist()
 		if len(list) == 0 {
-			fmt.Printf("! Error no markdown file in this directory.")
+			fmt.Errorf("! Error no markdown file in this directory.")
 			os.Exit(0)
 		}
 	} else {
