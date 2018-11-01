@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"time"
 )
 
 const (
@@ -14,24 +15,22 @@ const (
 )
 
 var (
-	dbg string = fmt.Sprintf("%s[ DBG ]%s", fmt.Sprintf(START, ORANGE), RESET)
-	inf string = fmt.Sprintf("%s[ INF ]%s", fmt.Sprintf(START, LIGHTBLUE), RESET)
-	err string = fmt.Sprintf("%s[ ERR ]%s", fmt.Sprintf(START, LIGHTRED), RESET)
-	war string = fmt.Sprintf("%s[ WAR ]%s", fmt.Sprintf(START, YELLOW), RESET)
+	dbg        string = fmt.Sprintf("%s[DBG]%s", fmt.Sprintf(START, ORANGE), RESET)
+	inf        string = fmt.Sprintf("%s[INF]%s", fmt.Sprintf(START, LIGHTBLUE), RESET)
+	err        string = fmt.Sprintf("%s[ERR]%s", fmt.Sprintf(START, LIGHTRED), RESET)
+	war        string = fmt.Sprintf("%s[WAR]%s", fmt.Sprintf(START, YELLOW), RESET)
+	timeFormat string = "15:04:05"
 )
 
-func Dbg(args ...interface{}) {
-	fmt.Printf("%s %s", dbg, fmt.Sprintf("%s\n", args...))
+func Dbg(str string, args ...interface{}) {
+	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), dbg, fmt.Sprintf(str, args...))
 }
-func Inf(args ...interface{}) {
-	fmt.Printf("%s %s", inf, fmt.Sprintf("%s\n", args...))
-	//fmt.Printf(" %s %s\n", inf, fmt.Sprintf(args...))
+func Inf(str string, args ...interface{}) {
+	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), inf, fmt.Sprintf(str, args...))
 }
-func Err(args ...interface{}) {
-	fmt.Printf("%s %s", err, fmt.Sprintf("%s\n", args...))
-	//fmt.Printf(" %s %s\n", err, fmt.Sprintf(args...))
+func Err(str string, args ...interface{}) {
+	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), err, fmt.Sprintf(str, args...))
 }
-func War(args ...interface{}) {
-	fmt.Printf("%s %s", war, fmt.Sprintf("%s\n", args...))
-	//fmt.Printf(" %s %s\n", war, fmt.Sprintf(args...))
+func War(str string, args ...interface{}) {
+	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), war, fmt.Sprintf(str, args...))
 }
