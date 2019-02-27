@@ -7,8 +7,8 @@ const TEMPLATE = `
 <head>
   <meta charset="utf-8">
   <title>{{.Name}}</title>
-  <link crossorigin="anonymous" media="all" integrity="sha512-mjQPRAh2Y9A0sPdZzipNfPO7PT4g06mk0uZs15DbL/vsNCRGx1uRzWVzls9MJCoy2yRNjaMmEVFKJDpCui00mA==" rel="stylesheet" href="https://assets-cdn.github.com/assets/frameworks-df973073d880f28fbbae0263fb1ef62b.css" />
-  <link crossorigin="anonymous" media="all" integrity="sha512-k4rXi2xAgpvXlB7r/tZ1ski3o3AWXfn7Z6hx6C/g9CcFeM5miuGB8zJFRgQW5wDKRaNQfv42R9F707X/2WqAQg==" rel="stylesheet" href="https://assets-cdn.github.com/assets/github-2b520d809bcf76c745c815d9523f0a00.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-RPWwIpqyjxv5EpuWKUKyeZeWz9QEzIbAWTiYOuxGieUq7+AMiZbsLeQMfEdyEIUoNjLagHK0BEm92BmXnvaH4Q==" rel="stylesheet" href="https://github.githubassets.com/assets/frameworks-40c1c9d8ff06284fb441108e6559f019.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-tCm5Qwdem1lB66O3j+wtOkAZAZ2vqNmh9sMLzmRhjZzW2jn3uAJSyt3x4p52+fz6b0MTf/VUjaXxzsgsvN8HSg==" rel="stylesheet" href="https://github.githubassets.com/assets/github-aeab953696d5337e9465738f175ce344.css" />
   <style>
     /* Page tweaks */
     .preview-page {
