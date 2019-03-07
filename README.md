@@ -13,7 +13,7 @@
   </a>
 </p>
 
-<p align="center"><img src="iampickle.jpg"></p>
+<p align="center"><img src="iampickle.jpg" width="350px"></p>
 
 # pickle
 
