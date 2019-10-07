@@ -10,6 +10,18 @@ import (
 	"github.com/hihebark/pickle/log"
 )
 
+func IsFile(path string) (bool, error) {
+	file, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+	return !file.Mode().IsDir(), nil
+}
+
+func SaveFileHTML() {
+	return
+}
+
 //Mdfileslist return a list of markdown file .md or .markdown
 func Mdfileslist() []string {
 	var listfiles []string
@@ -23,6 +35,20 @@ func Mdfileslist() []string {
 		}
 	}
 	return listfiles
+}
+
+func getFileList(dirpath string) []string {
+	var fileList []string
+	files, err := filepath.Glob("*.*")
+	if err != nil {
+		log.Err("Error on listing files on this directory %v", err)
+	}
+	for _, file := range files {
+		if filepath.Ext(file) == ".md" || filepath.Ext(file) == ".markdown" {
+			fileList = append(fileList, file)
+		}
+	}
+	return fileList
 }
 
 func contentFile(f string) string {

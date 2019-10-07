@@ -1,6 +1,69 @@
 package core
 
 import (
+	"fmt"
+	"net/http"
+	"path"
+	"sync"
+)
+
+type metadata struct {
+	commit string
+	date   string
+}
+type file struct {
+	path     string
+	name     string
+	metadata metadata
+}
+
+type Server struct {
+	mutex sync.RWMutex
+	token string
+	files []file
+}
+
+func NewServ(dirpath, token, assets string, reload bool) *Server {
+	fmt.Printf("Initialising server\n")
+	fileList := getFileList(dirpath)
+
+	server := &Server{
+		token: token,
+		files: mdFetcher(fileList),
+	}
+	return server
+}
+
+func (s *Server) Start() error {
+	fmt.Printf("Starting Server....\n")
+	err := http.ListenAndServe(":7069", s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func mdFetcher(paths []string) []file {
+	var files []file
+	for _, v := range paths {
+		files = append(files, file{
+			path: v,
+			name: path.Base(v),
+			metadata: metadata{
+				commit: "",
+				date:   "",
+			},
+		})
+	}
+	return files
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+}
+
+/*
+import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -97,3 +160,4 @@ func indexpage(w http.ResponseWriter, r *http.Request, wraps Wraps, key int, tok
 	wraps.Content = template.HTML(MarkdowntoHTML(contentFile(wraps.Name), token))
 	htmlTemplate.Execute(w, wraps)
 }
+*/

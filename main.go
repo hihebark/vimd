@@ -3,6 +3,53 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"github.com/hihebark/pickle/core"
+)
+
+var (
+	path   *string
+	token  *string
+	save   *bool
+	reload *bool
+	assets *string
+)
+
+func init() {
+	path = flag.String("path", "", "Path that contain the markdown file(s)")
+	token = flag.String("token", "", "Token ...")
+	save = flag.Bool("save", false, "Save the output into an html file(s)")
+	reload = flag.Bool("reload", false, "Reload when change is detected on the path")
+	assets = flag.String("assets", "", "")
+}
+
+func main() {
+	fmt.Printf("[ vi-md ] - 0.2.0\n")
+	flag.Parse()
+	if *save {
+		isFile, err := core.IsFile(*path)
+		if err != nil {
+			fmt.Printf("Err %v\n", err)
+		}
+
+		if isFile {
+			core.SaveFileHTML()
+		} else {
+			fmt.Printf("[ERR] Error Cant save a directory into an html file\n")
+		}
+	} else {
+		server := core.NewServ(*path, *token, *assets, *reload)
+		err := server.Start()
+		if err != nil {
+			fmt.Printf("[ERR] Error while executing server.Start:\n%v\n", err)
+		}
+	}
+}
+
+/*
+import (
+	"flag"
+	"fmt"
 	"os"
 
 	"github.com/hihebark/pickle/core"
@@ -42,3 +89,4 @@ func main() {
 	}
 	core.StartServer(list, *token, *static)
 }
+*/
