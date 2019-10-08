@@ -24,15 +24,15 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("[ vi-md ] - 0.2.0\n")
+	fmt.Printf("[ gomd ] - 0.2.0\n")
 	flag.Parse()
-	if *save {
+	if *save && *path != "" {
 		isFile, err := core.IsFile(*path)
 		if err != nil {
 			fmt.Printf("Err %v\n", err)
 		}
-
 		if isFile {
+			fmt.Printf("Saving file into current directory\n")
 			core.SaveFileHTML()
 		} else {
 			fmt.Printf("[ERR] Error Cant save a directory into an html file\n")

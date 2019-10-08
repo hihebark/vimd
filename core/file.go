@@ -39,7 +39,7 @@ func Mdfileslist() []string {
 
 func getFileList(dirpath string) []string {
 	var fileList []string
-	files, err := filepath.Glob("*.*")
+	files, err := filepath.Glob(filepath.Join(dirpath, "/*.*"))
 	if err != nil {
 		log.Err("Error on listing files on this directory %v", err)
 	}
@@ -76,8 +76,16 @@ func execute(pathExec string, args []string) string {
 	}
 	cmd, err := exec.Command(path, args...).CombinedOutput()
 	if err != nil {
-		log.Err("Error while executing %v", err)
+		log.Err("Error while executing %s %v\n%v", pathExec, args, err)
 		return ""
 	}
 	return strings.Replace(string(cmd), "\n", "", -1)
+}
+
+func getGitCommit(dir, fileName string) string {
+	return strings.Replace(execute("git", []string{"--git-dir", dir, "log", "--format='%s'", "-n 1", "--", fileName}), "'", "", -1)
+}
+
+func getGitDate(dir, fileName string) string {
+	return strings.Replace(execute("git", []string{"--git-dir", dir, "log", "--format='%cr'", "-n 1", "--", fileName}), "'", "", -1)
 }

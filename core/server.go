@@ -2,34 +2,48 @@ package core
 
 import (
 	"fmt"
+	"html/template"
+	"io/ioutil"
 	"net/http"
 	"path"
+	"strings"
 	"sync"
 )
 
-type metadata struct {
-	commit string
-	date   string
-}
-type file struct {
-	path     string
-	name     string
-	metadata metadata
+type Server struct {
+	mutex    sync.RWMutex
+	token    string
+	rendring rendring
 }
 
-type Server struct {
-	mutex sync.RWMutex
-	token string
-	files []file
+type rendring struct {
+	Current string
+	Content template.HTML
+	Files   []file
+}
+
+type file struct {
+	Path     string
+	Name     string
+	Metadata metadata
+}
+
+type metadata struct {
+	Commit string
+	Date   string
 }
 
 func NewServ(dirpath, token, assets string, reload bool) *Server {
-	fmt.Printf("Initialising server\n")
+	fmt.Printf("Initialising new server\n")
 	fileList := getFileList(dirpath)
 
 	server := &Server{
 		token: token,
-		files: mdFetcher(fileList),
+		rendring: rendring{
+			Current: "",
+			Content: "",
+			Files:   mdFetcher(fileList, dirpath+"/.git"),
+		},
 	}
 	return server
 }
@@ -43,23 +57,76 @@ func (s *Server) Start() error {
 	return nil
 }
 
-func mdFetcher(paths []string) []file {
+func mdFetcher(paths []string, dir string) []file {
 	var files []file
 	for _, v := range paths {
 		files = append(files, file{
-			path: v,
-			name: path.Base(v),
-			metadata: metadata{
-				commit: "",
-				date:   "",
+			Path: v,
+			Name: path.Base(v),
+			Metadata: metadata{
+				Commit: getGitCommit(dir, path.Base(v)),
+				Date:   getGitDate(dir, path.Base(v)),
 			},
 		})
 	}
 	return files
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *Server) contain(str string) (int, bool) {
+	for k, v := range s.rendring.Files {
+		if v.Name == str {
+			return k, true
+		}
+	}
+	return 0, false
+}
 
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch {
+	case r.URL.Path == "/":
+		s.mutex.RLock()
+		defer s.mutex.RUnlock()
+		s.render(w, r, 0)
+		return
+	case r.URL.Path != "/":
+		s.mutex.RLock()
+		defer s.mutex.RUnlock()
+		key, isIn := s.contain(path.Base(r.URL.Path))
+		if isIn {
+			s.render(w, r, key)
+		} else {
+			path := r.URL.Path[1:]
+			data, _ := ioutil.ReadFile(string(path))
+			if strings.HasSuffix(path, "jpg") || strings.HasSuffix(path, "jpeg") || strings.HasSuffix(path, "png") {
+				r.Header.Add("Content-type", "image/*")
+				w.Write(data)
+			} else {
+				s.notFoundPage(w, r)
+			}
+		}
+		return
+	default:
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+}
+
+func (s *Server) notFoundPage(w http.ResponseWriter, r *http.Request) {
+	htmlTemplate, err := template.New("404.html").Parse(NOTFOUNDPAGE)
+	if err != nil {
+		fmt.Printf("[ERR] Error html parser %v", err)
+	}
+	htmlTemplate.Execute(w, s.rendring)
+}
+
+func (s *Server) render(w http.ResponseWriter, r *http.Request, key int) {
+	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
+	if err != nil {
+		fmt.Printf("[ERR] Error html parser %v", err)
+	}
+	s.rendring.Current = s.rendring.Files[key].Name
+	s.rendring.Content = template.HTML(MarkdowntoHTML(contentFile(s.rendring.Files[key].Path), s.token))
+	htmlTemplate.Execute(w, s.rendring)
 }
 
 /*
