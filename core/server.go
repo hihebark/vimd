@@ -8,12 +8,16 @@ import (
 	"path"
 	"strings"
 	"sync"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
 type Server struct {
 	mutex    sync.RWMutex
-	token    string
+	socket   *socketio.Server
 	rendring rendring
+	token    string
+	watcher  bool
 }
 
 type rendring struct {
@@ -33,14 +37,19 @@ type metadata struct {
 	Date   string
 }
 
-func NewServ(dirpath, token, assets string, reload bool) *Server {
+func NewServ(dirpath, token string, watch bool) *Server {
 	fmt.Printf("Initialising new server\n")
 	fileList := getFileList(dirpath)
-
+	socket, err := socketio.NewServer(nil)
+	if err != nil {
+		fmt.Printf("[ERR] socketio %v\n", err)
+	}
 	server := &Server{
-		token: token,
+		watcher: watch,
+		token:   token,
+		socket:  socket,
 		rendring: rendring{
-			Current: "",
+			Current: "Error",
 			Content: "",
 			Files:   mdFetcher(fileList, dirpath+"/.git"),
 		},
@@ -48,8 +57,37 @@ func NewServ(dirpath, token, assets string, reload bool) *Server {
 	return server
 }
 
+func (s *Server) initSocket() {
+	s.socket.OnConnect("/", func(so socketio.Conn) error {
+		so.SetContext("")
+		fmt.Println("connected:", so.ID())
+		return nil
+	})
+	s.socket.OnError("error", func(err error) {
+		fmt.Println("error:", err)
+	})
+	s.socket.OnEvent("/", "notice", func(so socketio.Conn, msg string) {
+		fmt.Println("notice:", msg)
+		so.Emit("reply", "have "+msg)
+	})
+	s.socket.OnEvent("/chat", "msg", func(so socketio.Conn, msg string) string {
+		so.SetContext(msg)
+		return "recv " + msg
+	})
+	s.socket.OnDisconnect("/", func(so socketio.Conn, msg string) {
+		fmt.Println("closed", msg)
+	})
+	go s.socket.Serve()
+	defer s.socket.Close()
+}
+
 func (s *Server) Start() error {
-	fmt.Printf("Starting Server....\n")
+	fmt.Printf("Starting server....\n")
+	if s.watcher {
+		fmt.Printf("Starting socket....\n")
+		s.initSocket()
+		http.Handle("/socket/", s.socket)
+	}
 	err := http.ListenAndServe(":7069", s)
 	if err != nil {
 		return err
@@ -124,107 +162,12 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, key int) {
 	if err != nil {
 		fmt.Printf("[ERR] Error html parser %v", err)
 	}
-	s.rendring.Current = s.rendring.Files[key].Name
-	s.rendring.Content = template.HTML(MarkdowntoHTML(contentFile(s.rendring.Files[key].Path), s.token))
+	if len(s.rendring.Files) != 0 && key <= len(s.rendring.Files) {
+		s.rendring.Current = s.rendring.Files[key].Name
+		s.rendring.Content = template.HTML(MarkdowntoHTML(contentFile(s.rendring.Files[key].Path), s.token))
+	} else {
+		s.rendring.Content = "No <b>markdown</b> file found"
+	}
+
 	htmlTemplate.Execute(w, s.rendring)
 }
-
-/*
-import (
-	"html/template"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-	"strings"
-	"sync"
-
-	"github.com/hihebark/pickle/log"
-)
-
-// ServeMux just a mutex
-type ServeMux struct {
-	mutex  sync.RWMutex
-	wraps  Wraps
-	token  string
-	static string
-}
-
-// Wrap .
-type Wrap struct {
-	Commit string
-	Date   string
-	Name   string
-}
-
-// Wraps .
-type Wraps struct {
-	Wraps   []Wrap
-	Content template.HTML
-	Name    string
-}
-
-// StartServer open the port 7069.
-func StartServer(list []string, token, static string) {
-	log.Inf("Stating server on: localhost:7069 | [::1]:7069")
-	log.Inf("To exit hit Ctrl+c ...")
-	var ws []Wrap
-	for _, name := range list {
-		commit := strings.Replace(execute("git", []string{"log", "--format='%s'", "-n 1", name}), "'", "", -1)
-		date := strings.Replace(execute("git", []string{"log", "--format='%cr'", "-n 1", name}), "'", "", -1)
-		ws = append(ws, Wrap{commit, date, name})
-	}
-	x := &ServeMux{
-		wraps: Wraps{
-			Wraps: ws,
-		},
-		token:  token,
-		static: static,
-	}
-	err := http.ListenAndServe(":7069", x)
-	if err != nil {
-		log.Err("Error on starting server %v", err)
-	}
-}
-
-//ServeHTTP hundle results route
-func (x *ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch {
-	case r.URL.Path == "/index":
-		x.mutex.RLock()
-		defer x.mutex.RUnlock()
-		indexpage(w, r, x.wraps, 0, x.token)
-		return
-	case r.URL.Query().Get("f") != "":
-		x.mutex.RLock()
-		defer x.mutex.RUnlock()
-		k, _ := strconv.Atoi(r.URL.Query().Get("f"))
-		if k > len(x.wraps.Wraps) {
-			log.Inf("Processing with unknown page %d - redirecting to home", k)
-			http.Redirect(w, r, "/index", http.StatusFound)
-		}
-		log.Inf("Processing with %s file", x.wraps.Wraps[k].Name)
-		indexpage(w, r, x.wraps, k, x.token)
-		return
-	default:
-		path := r.URL.Path[1:]
-		data, _ := ioutil.ReadFile(string(path))
-		switch {
-		case strings.HasSuffix(path, "jpg") || strings.HasSuffix(path, "jpeg") || strings.HasSuffix(path, "png"):
-			r.Header.Add("Content-type", "image/*")
-			w.Write(data)
-		default:
-			http.Redirect(w, r, "/index", http.StatusFound)
-		}
-		return
-	}
-}
-func indexpage(w http.ResponseWriter, r *http.Request, wraps Wraps, key int, token string) {
-	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
-	if err != nil {
-		log.Err("Error html parser %v", err)
-	}
-	wraps.Name = wraps.Wraps[key].Name
-	wraps.Content = template.HTML(MarkdowntoHTML(contentFile(wraps.Name), token))
-	htmlTemplate.Execute(w, wraps)
-}
-*/

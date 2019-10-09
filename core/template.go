@@ -9,6 +9,15 @@ const TEMPLATE = `
   <title>{{.Current}}</title>
   <link crossorigin="anonymous" media="all" integrity="sha512-RPWwIpqyjxv5EpuWKUKyeZeWz9QEzIbAWTiYOuxGieUq7+AMiZbsLeQMfEdyEIUoNjLagHK0BEm92BmXnvaH4Q==" rel="stylesheet" href="https://github.githubassets.com/assets/frameworks-40c1c9d8ff06284fb441108e6559f019.css" />
   <link crossorigin="anonymous" media="all" integrity="sha512-tCm5Qwdem1lB66O3j+wtOkAZAZ2vqNmh9sMLzmRhjZzW2jn3uAJSyt3x4p52+fz6b0MTf/VUjaXxzsgsvN8HSg==" rel="stylesheet" href="https://github.githubassets.com/assets/github-aeab953696d5337e9465738f175ce344.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script>
+    const socket = io("http://localhost:7069/socket/");
+	console.log('loading js...');
+	socket.on('reply', function(msg){
+	  console.log('MESSAGE:', msg);
+	  socket.emit('notice', 'on');
+    });
+  </script>
   <style>
     /* Page tweaks */
     .preview-page {

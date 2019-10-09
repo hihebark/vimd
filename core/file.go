@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -18,28 +19,23 @@ func IsFile(path string) (bool, error) {
 	return !file.Mode().IsDir(), nil
 }
 
-func SaveFileHTML() {
+func SaveFileHTML(path string, output string, token string) {
+	html := MarkdowntoHTML(contentFile(path), token)
+	err := ioutil.WriteFile(output, []byte(html), 0755)
+	if err != nil {
+		fmt.Printf("[ERR] Unable to write file: %v", err)
+	}
 	return
 }
 
 //Mdfileslist return a list of markdown file .md or .markdown
-func Mdfileslist() []string {
-	var listfiles []string
-	files, err := filepath.Glob("*.*")
-	if err != nil {
-		log.Err("Error on listing files on this directory %v", err)
-	}
-	for _, v := range files {
-		if filepath.Ext(v) == ".md" || filepath.Ext(v) == ".markdown" {
-			listfiles = append(listfiles, v)
-		}
-	}
-	return listfiles
-}
-
 func getFileList(dirpath string) []string {
 	var fileList []string
-	files, err := filepath.Glob(filepath.Join(dirpath, "/*.*"))
+
+	if true {
+		fmt.Println("if it's a file make it into an array and return it...")
+	}
+	files, err := filepath.Glob(filepath.Join(dirpath, "*.*"))
 	if err != nil {
 		log.Err("Error on listing files on this directory %v", err)
 	}
