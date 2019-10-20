@@ -9,4 +9,5 @@ matrix:
   fast_finish: true
 
 script:
+  - go get -u github.com/hihebark/vimd
   - go build ./...
