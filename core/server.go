@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -14,6 +15,7 @@ import (
 
 type Server struct {
 	mutex    sync.RWMutex
+	port     string
 	socket   *socketio.Server
 	rendring rendring
 	token    string
@@ -37,21 +39,26 @@ type metadata struct {
 	Date   string
 }
 
-func NewServ(dirpath, token string, watch bool) *Server {
-	fmt.Printf("Initialising new server\n")
+func NewServ(port, dirpath, token string, watch bool) *Server {
+	fmt.Printf("[*] Initialising server\n")
 	fileList := getFileList(dirpath)
 	socket, err := socketio.NewServer(nil)
 	if err != nil {
-		fmt.Printf("[ERR] socketio %v\n", err)
+		fmt.Printf("[ERR] socketio NewServer %v\n", err)
+	}
+	dir := "./.git"
+	if path.Base(dirpath) != dirpath {
+		dir = filepath.Join(dirpath, "/.git")
 	}
 	server := &Server{
+		port:    port,
 		watcher: watch,
 		token:   token,
 		socket:  socket,
 		rendring: rendring{
 			Current: "Error",
 			Content: "",
-			Files:   mdFetcher(fileList, dirpath+"/.git"),
+			Files:   mdFetcher(fileList, dir),
 		},
 	}
 	return server
@@ -63,17 +70,13 @@ func (s *Server) initSocket() {
 		fmt.Println("connected:", so.ID())
 		return nil
 	})
-	s.socket.OnError("error", func(err error) {
-		fmt.Println("error:", err)
+	s.socket.OnEvent("/", "hello", func(s socketio.Conn) string {
+		last := s.Context().(string)
+		s.Emit("bye", last)
+		s.Close()
+		return last
 	})
-	s.socket.OnEvent("/", "notice", func(so socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		so.Emit("reply", "have "+msg)
-	})
-	s.socket.OnEvent("/chat", "msg", func(so socketio.Conn, msg string) string {
-		so.SetContext(msg)
-		return "recv " + msg
-	})
+
 	s.socket.OnDisconnect("/", func(so socketio.Conn, msg string) {
 		fmt.Println("closed", msg)
 	})
@@ -82,13 +85,13 @@ func (s *Server) initSocket() {
 }
 
 func (s *Server) Start() error {
-	fmt.Printf("Starting server....\n")
 	if s.watcher {
-		fmt.Printf("Starting socket....\n")
+		fmt.Printf("[+] Starting socket....\n")
 		s.initSocket()
-		http.Handle("/socket/", s.socket)
+		http.Handle("/socket.io/", s.socket)
 	}
-	err := http.ListenAndServe(":7069", s)
+	fmt.Printf("[+] Starting server at http://localhost:%s/\n", s.port)
+	err := http.ListenAndServe(":"+s.port, s)
 	if err != nil {
 		return err
 	}
@@ -152,7 +155,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) notFoundPage(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate, err := template.New("404.html").Parse(NOTFOUNDPAGE)
 	if err != nil {
-		fmt.Printf("[ERR] Error html parser %v", err)
+		fmt.Printf("[ERR] Error html parser \n%v\n", err)
 	}
 	htmlTemplate.Execute(w, s.rendring)
 }
@@ -160,7 +163,7 @@ func (s *Server) notFoundPage(w http.ResponseWriter, r *http.Request) {
 func (s *Server) render(w http.ResponseWriter, r *http.Request, key int) {
 	htmlTemplate, err := template.New("index.html").Parse(TEMPLATE)
 	if err != nil {
-		fmt.Printf("[ERR] Error html parser %v", err)
+		fmt.Printf("[ERR] Error html parser \n%v\n", err)
 	}
 	if len(s.rendring.Files) != 0 && key <= len(s.rendring.Files) {
 		s.rendring.Current = s.rendring.Files[key].Name
@@ -168,6 +171,5 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, key int) {
 	} else {
 		s.rendring.Content = "No <b>markdown</b> file found"
 	}
-
 	htmlTemplate.Execute(w, s.rendring)
 }

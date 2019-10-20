@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hihebark/pickle/core"
+	"github.com/hihebark/vimd/core"
 )
+
+const VERSION = "0.2.0"
 
 var (
 	path   *string
@@ -13,37 +15,37 @@ var (
 	save   *bool
 	output *string
 	watch  *bool
+	port   *string
 )
 
 func init() {
-	path = flag.String("path", "", "Path that contain the markdown file(s)")
-	token = flag.String("token", "", "Token ...")
-	save = flag.Bool("save", false, "Save the output into an html file(s)")
-	output = flag.String("output", "", "")
-	watch = flag.Bool("watch", false, "Reload when change is detected on the path")
+	path = flag.String("p", ".", "Path that contain the markdown file(s)")
+	port = flag.String("port", "7069", "The serve port")
+	token = flag.String("token", "", "Github personal accesss token")
+	save = flag.Bool("s", false, "Save the output into an html file(s)")
+	output = flag.String("o", "", "The name and path of the output rendred HTML")
+	watch = flag.Bool("watch", false, "Reload when change is detected on the path (soon)")
 }
 
 func main() {
-	fmt.Printf("-=======-\n")
-	fmt.Printf("| Vismd | - 0.2.0\n")
-	fmt.Printf("-=======-\n")
+	fmt.Printf("\n[ Vimd ] - %s\n\n", VERSION)
 	flag.Parse()
 	if *save && *path != "" && *output != "" {
 		isFile, err := core.IsFile(*path)
 		if err != nil {
-			fmt.Printf("Err %v\n", err)
+			fmt.Printf("[Err] While checking the state of the file%v\n", err)
 		}
 		if isFile {
-			fmt.Printf("Saving file into current directory\n")
+			fmt.Printf("[+] Saving file into: %s\n", *output)
 			core.SaveFileHTML(*path, *output, *token)
 		} else {
-			fmt.Printf("[ERR] Error Cant save a directory into an html file\n")
+			fmt.Printf("[ERR] Can't save a directory into an html file\n")
 		}
 	} else {
-		server := core.NewServ(*path, *token, *watch)
+		server := core.NewServ(*port, *path, *token, *watch)
 		err := server.Start()
 		if err != nil {
-			fmt.Printf("[ERR] Error while executing server.Start:\n%v\n", err)
+			fmt.Printf("[ERR] While executing server.Start:\n%v\n", err)
 		}
 	}
 }

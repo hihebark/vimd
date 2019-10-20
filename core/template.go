@@ -11,12 +11,16 @@ const TEMPLATE = `
   <link crossorigin="anonymous" media="all" integrity="sha512-tCm5Qwdem1lB66O3j+wtOkAZAZ2vqNmh9sMLzmRhjZzW2jn3uAJSyt3x4p52+fz6b0MTf/VUjaXxzsgsvN8HSg==" rel="stylesheet" href="https://github.githubassets.com/assets/github-aeab953696d5337e9465738f175ce344.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
   <script>
-    const socket = io("http://localhost:7069/socket/");
-	console.log('loading js...');
-	socket.on('reply', function(msg){
-	  console.log('MESSAGE:', msg);
-	  socket.emit('notice', 'on');
-    });
+	try {
+		var socket = io("http://localhost:7069/socket.io/");
+		socket.on('connection', (socket) => {console.log('connection')});
+		console.log('loading js...');
+		socket.emit('/', 'hello', (res) => {
+		  console.log(res);
+		});
+	} catch(err) {
+		console.log(err);
+	}
   </script>
   <style>
     /* Page tweaks */
